@@ -36,10 +36,16 @@ module.exports = async (req, res) => {
   })
 
   // Convert base64 attachments to Buffer
-  const attachmentBuffers = attachments.map((att, index) => ({
-    filename: `attachment${index + 1}.${extension}`, // Note: You need to define the 'extension' variable
-    content: Buffer.from(att.data, "base64"),
-  }))
+  const attachmentBuffers = attachments.map((att, index) => {
+    // Extract file extension from MIME type
+    const extension = att.type.split("/")[1] // assuming att.type is something like "image/png"
+
+    return {
+      filename: `attachment${index + 1}.${extension}`, // Now extension is defined
+      content: Buffer.from(att.data, "base64"),
+    }
+  })
+
 
   // Send email
   try {
