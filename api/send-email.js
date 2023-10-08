@@ -2,21 +2,21 @@ const nodemailer = require("nodemailer")
 
 module.exports = async (req, res) => {
   // Set CORS headers
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    "https://my-new-site-nine.vercel.app"
-  ) // replace with your frontend's origin
-  res.setHeader("Access-Control-Allow-Methods", "POST")
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type")
+   res.setHeader(
+     "Access-Control-Allow-Origin",
+     "https://my-new-site-nine.vercel.app"
+   )
+   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS")
+   res.setHeader("Access-Control-Allow-Headers", "Content-Type")
 
-  // Handle Preflight Request
-  if (req.method === "OPTIONS") {
-    return res.status(200).end()
-  }
+   // Handle Preflight Request
+   if (req.method === "OPTIONS") {
+     return res.status(200).end()
+   }
 
-  if (req.method !== "POST") {
-    return res.status(405).end() // Method Not Allowed
-  }
+   if (req.method !== "POST") {
+     return res.status(405).end() // Method Not Allowed
+   }
 
   // Parse request body
   const { name, email, subject, message, attachments } = req.body
