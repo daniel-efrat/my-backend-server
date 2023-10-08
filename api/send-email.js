@@ -1,7 +1,19 @@
-// api/send-email.js
 const nodemailer = require("nodemailer")
 
 module.exports = async (req, res) => {
+  // Set CORS headers
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "https://my-new-site-nine.vercel.app"
+  ) // replace with your frontend's origin
+  res.setHeader("Access-Control-Allow-Methods", "POST")
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type")
+
+  // Handle Preflight Request
+  if (req.method === "OPTIONS") {
+    return res.status(200).end()
+  }
+
   if (req.method !== "POST") {
     return res.status(405).end() // Method Not Allowed
   }
@@ -25,7 +37,7 @@ module.exports = async (req, res) => {
 
   // Convert base64 attachments to Buffer
   const attachmentBuffers = attachments.map((att, index) => ({
-    filename: `attachment${index + 1}.${extension}`, // Use the correct file extension
+    filename: `attachment${index + 1}.${extension}`, // Note: You need to define the 'extension' variable
     content: Buffer.from(att.data, "base64"),
   }))
 
