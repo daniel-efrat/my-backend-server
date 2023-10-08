@@ -17,7 +17,7 @@ app.post("/send-email", upload.array("attachments"), async (req, res) => {
 
   // Handling no files uploaded case
   if (!req.files || req.files.length === 0) {
-    return res.status(400).send("No files were uploaded.")
+    return res.status(400).send("לא נבחרו קבצים.")
   }
 
   let transporter = nodemailer.createTransport({
