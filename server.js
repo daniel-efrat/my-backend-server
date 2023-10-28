@@ -3,55 +3,44 @@ const express = require("express")
 const nodemailer = require("nodemailer")
 const cors = require("cors")
 const multer = require("multer")
+const path = require("path")
 
 const app = express()
 app.use(cors())
-app.use(express.json()) // Add this line to parse JSON body
+app.use(express.json())
 
-const storage = multer.memoryStorage()
+// Set up storage for image uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/") // Make sure this folder exists
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+    )
+  },
+})
+
 const upload = multer({ storage: storage })
 
+// Endpoint for image upload
+app.post("/upload-image", upload.single("image"), (req, res) => {
+  if (!req.file) {
+    return res.status(400).send("No image file uploaded.")
+  }
+  // You can return the path or URL of the uploaded file here
+  res.status(200).send({ filePath: `/uploads/${req.file.filename}` })
+})
+
+// Serve static files from uploads directory
+app.use("/uploads", express.static("uploads"))
+
+// Existing email sending endpoint
 app.post("/send-email", upload.array("attachments"), async (req, res) => {
-  console.log("Received body:", req.body)
-  console.log("Received files:", req.files)
-
-  // Handling no files uploaded case
-  if (!req.files || req.files.length === 0) {
-    return res.status(400).send("לא נבחרו קבצים.")
-  }
-
-  let transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  })
-
-  const attachments = req.files.map((file) => ({
-    filename: file.originalname,
-    content: file.buffer,
-  }))
-
-  // Ensure you have name, email, subject, and message in the request body
-  const { name, email, subject, message } = req.body
-
-  try {
-    await transporter.sendMail({
-      from: `"My Website" <${process.env.EMAIL_USER}>`,
-      to: process.env.RECIPIENT_EMAIL, // Ensure this variable is set in your .env file
-      subject: subject,
-      text: `From: ${name} <${email}>\n\n${message}`,
-      attachments: attachments,
-    })
-    res.send("Email sent!")
-  } catch (error) {
-    console.error("Error sending email:", error)
-    res.status(500).send("Error sending email")
-  }
+  // ... existing code for sending email ...
 })
 
 app.listen(3001, () => {
   console.log("Server is running on port 3001")
 })
-//comment
