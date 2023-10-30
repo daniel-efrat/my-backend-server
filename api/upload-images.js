@@ -28,7 +28,7 @@ const upload = multer({ storage: storage })
 // ...
 
 // New /upload-image endpoint
-app.post("/upload-image", upload.single("image"), (req, res) => {
+app.post("/upload-images", upload.single("image"), (req, res) => {
   if (!req.file) {
     return res.status(400).send("No file uploaded.")
   }
@@ -46,3 +46,5 @@ app.use("/uploads", express.static("uploads"))
 app.listen(3001, () => {
   console.log("Server is running on port 3001")
 })
+
+//comment
